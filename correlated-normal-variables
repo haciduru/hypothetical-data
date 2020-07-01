@@ -1,0 +1,61 @@
+# This function creates two random normally distributed variables that are correlated with each other. 
+# The function takes two paramaters: N and R. # N is the number of cases and R is the correlation coefficient.
+# The function returns a matrix.
+
+create_data = function(N, R) {
+
+	x = round(matrix(rnorm(N)), 2)
+	y = x * R
+	
+	for (i in 1:N) {
+
+		X = matrix(cbind(1, x), ncol=2)
+		b = solve(t(X) %*% X) %*% t(X) %*% y
+		r = cor(x, y)
+
+		x_new = rnorm(1)
+		yhat = b[1] + b[2] * x_new
+		e = abs(rnorm(1))
+
+		if (r > 0) {
+			if (abs(R) > abs(r)) {
+				if (x_new > mean(x)) {
+					y_new = yhat + e
+				} else {
+					y_new = yhat - e
+				}
+			} else {
+				if (x_new > mean(x)) {
+					y_new = yhat - e
+				} else {
+					y_new = yhat + e
+				}
+			}
+		} else {
+			if (abs(R) > abs(r)) {
+				if (x_new > mean(x)) {
+					y_new = yhat - e
+				} else {
+					y_new = yhat + e
+				}
+			} else {
+				if (x_new > mean(x)) {
+					y_new = yhat + e
+				} else {
+					y_new = yhat - e
+				}
+			}
+		}
+		
+		x = rbind(matrix(x[-1]), round(matrix(x_new), 2))
+		y = rbind(matrix(y[-1]), round(matrix(y_new), 2))
+		
+	}
+	
+	return(cbind(x, y))
+
+}
+
+# Run the following lines to test the function.
+# data = create_data(100, .3)
+# cor(data)
