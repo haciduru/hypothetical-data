@@ -51,6 +51,12 @@ vote4e = function(x, X, R, r) {
 
 }
 
+# This function creates two normally distributed random variables that are correlated with each other. 
+# Inputs:
+#	n (integer) number of cases
+#	r (float) bivariate correlation between the variables.
+# Returns:
+# 	A (n X 2) matrix
 create_xy = function(n, R) {
 
 	X = round(matrix(rnorm(n)), 2)
