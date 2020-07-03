@@ -5,15 +5,26 @@ library(corpcor)
 # depending on values of x, X, R, and r. A positive error term will pull the
 # value of y above the yhat (predicted value of y). A negative error term will 
 # do the opposite.
+# Inputs:
+#	x (float) a normal variable
+#	X (vector) a vector of normally distributed variable
+#	R (float) correlation coefficient (targetted)
+#	r (float) correlation coefficient (current)
+# Returns:
+# 	1 or -1
 vote4e = function(x, X, R, r) {
 
+	# If the current correlation coefficient is positive ...
 	if (r > 0) {
+	
+		# If the size of the current correlation coefficient smaller than the target coefficient ...
 		if (abs(R) > abs(r)) {
 			if (x > mean(X)) {
 				return(1)
 			} else {
 				return(-1)
 			}
+		# Else ...
 		} else {
 			if (x > mean(X)) {
 				return(-1)
@@ -21,6 +32,7 @@ vote4e = function(x, X, R, r) {
 				return(1)
 			}
 		}
+	# Else ...
 	} else {
 		if (abs(R) > abs(r)) {
 			if (x > mean(X)) {
