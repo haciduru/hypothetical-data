@@ -1,0 +1,99 @@
+library(corpcor)
+
+# Vote for the error term
+# This function decides whether the error term will be positive or negative 
+# depending on values of x, X, R, and r. A positive error term will pull the
+# value of y above the yhat (predicted value of y). A negative error term will 
+# do the opposite.
+vote4e = function(x, X, R, r) {
+
+	if (r > 0) {
+		if (abs(R) > abs(r)) {
+			if (x > mean(X)) {
+				return(1)
+			} else {
+				return(-1)
+			}
+		} else {
+			if (x > mean(X)) {
+				return(-1)
+			} else {
+				return(1)
+			}
+		}
+	} else {
+		if (abs(R) > abs(r)) {
+			if (x > mean(X)) {
+				return(-1)
+			} else {
+				return(1)
+			}
+		} else {
+			if (x > mean(X)) {
+				return(1)
+			} else {
+				return(-1)
+			}
+		}
+	}
+
+}
+
+create_xy = function(n, R) {
+
+	X = round(matrix(rnorm(n)), 2)
+	Y = X * R
+	
+	for (i in 1:n) {
+
+		X = matrix(cbind(1, X), ncol=2)
+		b = solve(t(X) %*% X) %*% t(X) %*% Y
+		r = cor(X[,2], Y)
+
+		x = rnorm(1)
+		e = vote4e(x, X, R, r) * abs(rnorm(1))
+		y = b[1] + b[2] * x + e
+
+		X = matrix(X[,2])
+		X = rbind(matrix(X[-1]), matrix(x))
+		Y = rbind(matrix(Y[-1]), matrix(y))
+		
+	}
+	
+	return(cbind(X, Y))
+
+}
+
+create_xyz = function(n, Rs) {
+
+	data = create_xy(1000, Rs[1,2])
+
+	k = 2
+	while (k < ncol(Rs)) {
+	
+		k = k + 1
+		pRs = cor2pcor(Rs[,1:k][1:k,])
+
+		Yhat = 0
+		for (i in 1:(k-1)) {
+			Yhat = Yhat + data[,i] * pRs[i,k]
+		}
+		data = cbind(data, matrix(Yhat))
+
+		i = 0
+		while (i < nrow(data)) {
+			i = i + 1
+			e = abs(rnorm(1))
+			ehat = 0
+			j = 0
+			while (j < (k-1)) {
+				j = j + 1
+				ehat = ehat + vote4e(data[i,j], data[,j], Rs[j,k], cor(data[,j], data[,k]))
+			}
+			data[i,k] = data[i,k] + ehat * e
+		}
+
+	}
+	
+	return(data)
+}
