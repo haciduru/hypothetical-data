@@ -1,19 +1,19 @@
 
 
 # This function creates a hypothetical correlation matrix.
-create_correlation_matrix = function(N) {
+create_correlation_matrix = function(n) {
 
-	M = matrix(rnorm(N*N), ncol=N)
-	for (i in 1:(N-1)) {
-		for (j in i:N) {
-			M[i,j] = mean(c(M[i,j], M[j,i]))
-			M[j,i] = M[i,j]
+	m = matrix(rnorm(n*n), ncol=n)
+	for (i in 1:(n-1)) {
+		for (j in i:n) {
+			m[i,j] = mean(c(m[i,j], m[j,i]))
+			m[j,i] = m[i,j]
 		}
 	}
-	sdr = sd(M)
-	for (i in 1:length(M)) { M[i] = M[i] / abs(sdr) / 4 }
-	for (i in 1:N) { M[i,i] = 1 }
-	return(M)
+	sdr = sd(m)
+	for (i in 1:length(m)) { m[i] = m[i] / abs(sdr) / 4 }
+	for (i in 1:n) { m[i,i] = 1 }
+	return(m)
 
 }
 
