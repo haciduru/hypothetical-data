@@ -59,19 +59,33 @@ vote4e = function(x, X, R, r) {
 # 	A (n X 2) matrix
 create_xy = function(n, R) {
 
+	# Initialize the first variable.
 	X = round(matrix(rnorm(n)), 2)
+	
+	# Initialize the second variable. At this time, there is perfect
+	# correlation between the two variables.
 	Y = X * R
 	
+	# The following loop adds n new cases to the data. Every time a new case is
+	# added at the bottom, one case is dropped from the top. 
 	for (i in 1:n) {
 
+		# Find the linear regression equation and the current correlation coefficient.
 		X = matrix(cbind(1, X), ncol=2)
 		b = solve(t(X) %*% X) %*% t(X) %*% Y
 		r = cor(X[,2], Y)
 
+		# Initialize x (the first variable) for the new case. 
 		x = rnorm(1)
-		e = vote4e(x, X, R, r) * abs(rnorm(1))
+		
+		# Calculate the predicted value of y (the second variable) based on the regression equation.
 		y = b[1] + b[2] * x + e
 
+		# Get a random normal value to add as the error term.
+		e = vote4e(x, X, R, r) * abs(rnorm(1))
+
+		# Add the new x and y values to the bottom of the dataset.
+		# Also, drop the first row of the dataset.
 		X = matrix(X[,2])
 		X = rbind(matrix(X[-1]), matrix(x))
 		Y = rbind(matrix(Y[-1]), matrix(y))
